@@ -1,0 +1,456 @@
+import React, { useEffect, useCallback, useState } from 'react';
+import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { NavigationContainer } from '@react-navigation/native';
+import {  TouchableOpacity} from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
+import Home from './Home';
+import Login from './auth/Login';
+import Register from './auth/Register';
+import { useDispatch, useSelector } from 'react-redux';
+import Logout from './auth/Logout';
+import { getUserDetails } from '../redux/slices/authSlice';
+import RegistrationVeri from './auth/RegistrationVeri';
+import ForgotPassword from './auth/ForgotPassword';
+import ResetPassword from './auth/ResetPassword';
+import { ApiUrl } from '../helpers/ApiUrl';
+import Driver from './private/driver/Driver';
+import Taxis from "./public/taxis/Taxis"
+import Inbox from "./private/inbox/Inbox"
+// import FCMHandler from '../helpers/FCMHandler';
+
+// Create the Stack Navigator for Login and Register screens
+const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
+
+
+
+
+// HomeBar Screen component (memoized)
+const HomeBar = React.memo(() => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Hom" component={Home}  
+      
+      options={() => ({
+        headerShown: false,
+        headerTitle: "Home"
+       
+      })} 
+      
+      
+      
+      />
+
+      
+    
+    </Stack.Navigator>
+  );
+});
+
+// TaxiBar Screen component (memoized)
+const TaxiBar = React.memo(() => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Taxis" component={Taxis} 
+      
+      options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: "Taxis",
+        headerLeft: () => (
+          <TouchableOpacity 
+            onPress={() => navigation.goBack()}
+            style={{ marginLeft: 10 }}
+          >
+            <Icon name="arrow-back" size={24} color="#000" />
+          </TouchableOpacity>
+        )
+      })} 
+      
+      />
+    
+      
+      <Stack.Screen name="Login" component={Login} 
+      
+      options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: "Log In",
+        headerLeft: () => (
+          <TouchableOpacity 
+            onPress={() => navigation.goBack()}
+            style={{ marginLeft: 10 }}
+          >
+            <Icon name="arrow-back" size={24} color="#000" />
+          </TouchableOpacity>
+        )
+      })} 
+      
+      />
+      <Stack.Screen name="Register" component={Register} 
+      
+      options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: "Register",
+        headerLeft: () => (
+          <TouchableOpacity 
+            onPress={() => navigation.goBack()}
+            style={{ marginLeft: 10 }}
+          >
+            <Icon name="arrow-back" size={24} color="#000" />
+          </TouchableOpacity>
+        )
+      })} 
+      
+      
+      />
+      
+
+    </Stack.Navigator>
+  );
+});
+
+// Authentication Stack (Login and Register Screens)
+const AuthStack = React.memo(() => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Login" component={Login} 
+      
+      options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: "Log in",
+        headerLeft: () => (
+          <TouchableOpacity 
+            onPress={() => navigation.goBack()}
+            style={{ marginLeft: 10 }}
+          >
+            <Icon name="arrow-back" size={24} color="#000" />
+          </TouchableOpacity>
+        )
+      })} 
+      
+      
+      />
+      <Stack.Screen name="Register" component={Register} options={({ navigation }) => ({
+  headerShown: true,
+  headerTitle: "Register",
+  headerLeft: () => (
+    <TouchableOpacity 
+      onPress={() => navigation.goBack()}
+      style={{ marginLeft: 10 }}
+    >
+      <Icon name="arrow-back" size={24} color="#000" />
+    </TouchableOpacity>
+  )
+})} 
+ />
+      <Stack.Screen name="RegistrationVeri" component={RegistrationVeri} 
+      options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: "Verify",
+        headerLeft: () => (
+          <TouchableOpacity 
+            onPress={() => navigation.goBack()}
+            style={{ marginLeft: 10 }}
+          >
+            <Icon name="arrow-back" size={24} color="#000" />
+          </TouchableOpacity>
+        )
+      })} 
+      
+      
+      />
+      <Stack.Screen name="ForgotPassword" component={ForgotPassword} 
+      
+      options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: "Forgot Password",
+        headerLeft: () => (
+          <TouchableOpacity 
+            onPress={() => navigation.goBack()}
+            style={{ marginLeft: 10 }}
+          >
+            <Icon name="arrow-back" size={24} color="#000" />
+          </TouchableOpacity>
+        )
+      })} 
+      
+      
+      />
+      <Stack.Screen name="ResetPassword" component={ResetPassword} 
+      
+      options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: "Reset Password",
+        headerLeft: () => (
+          <TouchableOpacity 
+            onPress={() => navigation.goBack()}
+            style={{ marginLeft: 10 }}
+          >
+            <Icon name="arrow-back" size={24} color="#000" />
+          </TouchableOpacity>
+        )
+      })} 
+      
+      
+      />
+
+
+
+
+    </Stack.Navigator>
+  );
+});
+
+// Logout Stack
+const LogsOut = React.memo(() => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Logout" component={Logout} 
+      
+      options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: "Log Out",
+        headerLeft: () => (
+          <TouchableOpacity 
+            onPress={() => navigation.goBack()}
+            style={{ marginLeft: 10 }}
+          >
+            <Icon name="arrow-back" size={24} color="#000" />
+          </TouchableOpacity>
+        )
+      })} 
+      
+      />
+      <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
+    </Stack.Navigator>
+  );
+});
+
+
+
+const DriverStack = React.memo(() => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen 
+      name="driver" 
+      component={Driver}
+      options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: "Driver Profile",
+        headerLeft: () => (
+          <TouchableOpacity 
+            onPress={() => navigation.goBack()}
+            style={{ marginLeft: 10 }}
+          >
+            <Icon name="arrow-back" size={24} color="#000" />
+          </TouchableOpacity>
+        )
+      })} 
+      
+      
+      />      
+      
+     
+    </Stack.Navigator>
+  );
+});
+
+
+const MessagingStack = React.memo(() => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="inbox" component={Inbox} 
+      
+      options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: "Messages",
+        headerLeft: () => (
+          <TouchableOpacity 
+            onPress={() => navigation.goBack()}
+            style={{ marginLeft: 10 }}
+          >
+            <Icon name="arrow-back" size={24} color="#000" />
+          </TouchableOpacity>
+        )
+      })} 
+      
+      
+      />
+      
+      
+    </Stack.Navigator>
+  );
+});
+
+
+
+
+function AppNavigator() {
+  const { token, user, loading } = useSelector((state) => state.auth);
+  const[unreadMessagesCount, setUnreadMessagesCount] = useState([])
+    const [loadingUser, setLoadingUser] = useState(true); // Optional: You can rely on Redux `loading` instead
+
+      const navigationRef = React.useRef(null)
+
+
+  const dispatch = useDispatch();
+
+  
+   
+  
+  useEffect(() => {
+    const fetchUnreadMessages = async () => {
+      try {
+        if (!token) {
+          // console.error('No token found, user may need to log in.');
+          return; // Exit if there's no token
+        }
+  
+
+        const response = await fetch(`${ApiUrl}/unread_messages`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+        // Check if the response is successful
+        if (!response.ok) {
+          
+          return;
+        }
+  
+        // Check if the response is in JSON format
+        const contentType = response.headers.get("Content-Type");
+        if (!contentType || !contentType.includes("application/json")) {
+          // console.error('Error: Expected JSON, but received something else.');
+          return; // Exit if the response is not JSON
+        }
+  
+        // Parse JSON only if it's valid
+        const data = await response.json();
+        setUnreadMessagesCount(data.unreadCount || 0);
+  
+      } catch (error) {
+        console.log('Error fetching unread messages:', error);
+      }
+    };
+  
+    fetchUnreadMessages();
+  
+    const interval = setInterval(fetchUnreadMessages, 4000); // Poll every 4 seconds
+  
+    // Cleanup interval on unmount
+    return () => clearInterval(interval);
+  }, [token]);
+  
+  
+  
+  // Fetch user details only if not already fetched
+  const fetchUserDetails = useCallback(async () => {
+    if (!user) {
+      await dispatch(getUserDetails());
+    }
+  }, [dispatch, user]);
+
+  useEffect(() => {
+    fetchUserDetails();
+  }, [fetchUserDetails]);
+
+
+
+  return (
+    <NavigationContainer ref={navigationRef}>
+    
+
+{/* {token && <FCMHandler />} */}
+    
+{/* first time user modal */}
+
+ 
+
+      {/* navigation here */}
+        {/* {token && user?.role === 11 && <DriverLocationUpdater driverId={user?._id} /> } */}
+
+
+      <Tab.Navigator
+      screenOptions={{
+        headerShown: false  // This hides all tab level headers
+      }}
+      >
+    
+         <Tab.Screen
+          name="Home"
+          component={HomeBar}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Icon name="home-outline" size={size} color={color} />
+            ),
+          }}
+        /> 
+
+          
+        
+
+        {
+          token && (
+        
+        <Tab.Screen
+  name="Inbox"
+  component={MessagingStack}
+  options={{
+    tabBarIcon: ({ color, size }) => (
+      <Icon name="mail-outline" size={size} color={color} />
+    ),
+    tabBarBadge: unreadMessagesCount > 0 ? unreadMessagesCount : null,
+  }}
+/>
+          )
+        }
+
+        {/* Conditional rendering for Driver tab */}
+        {token && user?.role === 11 && (
+        
+
+           <Tab.Screen
+           name="Driver"
+         component={DriverStack}
+           options={{
+             tabBarIcon: ({ color, size }) => (
+               <Icon name="person-outline" size={size} color={color} />
+             ),
+           }}
+      
+    
+           /> )}
+      
+
+       
+        {/* Authentication Tab */}
+        {token ? (
+          <Tab.Screen
+            name="LOGOUT"
+            component={LogsOut}
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <Icon name="log-out-outline" size={size} color={color} />
+              ),
+            }}
+          />
+        ) : (
+          <Tab.Screen
+            name="Log In"
+            component={AuthStack} // Auth Stack (Login and Register)
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <Icon name="log-in-outline" size={size} color={color} />
+              ),
+            }}
+          />
+        )}
+      </Tab.Navigator>
+      
+    </NavigationContainer>
+  );
+}
+
+export default AppNavigator;

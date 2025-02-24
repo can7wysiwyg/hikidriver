@@ -1,20 +1,37 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import 'react-native-gesture-handler';
+import { StatusBar } from 'react-native'; // Added Platform to detect device platform
+import { SafeAreaView } from 'react-native';
+import { Provider } from 'react-redux';
+import AppNavigator from './components/AppNavigator'; // Ensure the path is correct
+import store from './redux/store';
+import AuthProvider from './redux/slices/AuthProvider';
+import { enableScreens } from 'react-native-screens';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+
+// Enable screens
+enableScreens();
+
 
 export default function App() {
+
+ 
+ 
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <Provider store={store}>
+            <SafeAreaProvider>
+            <StatusBar style="auto" />
+
+      {/* <SafeAreaView style={{ flex: 1 }}> */}
+        <AuthProvider>
+        <AppNavigator />
+        </AuthProvider>
+        <StatusBar style="auto" />
+      {/* </SafeAreaView> */}
+      </SafeAreaProvider>
+
+    </Provider>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
