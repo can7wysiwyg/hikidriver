@@ -6,17 +6,16 @@ import {  TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Home from './Home';
 import Login from './auth/Login';
-import Register from './auth/Register';
 import { useDispatch, useSelector } from 'react-redux';
 import Logout from './auth/Logout';
 import { getUserDetails } from '../redux/slices/authSlice';
-import RegistrationVeri from './auth/RegistrationVeri';
 import ForgotPassword from './auth/ForgotPassword';
 import ResetPassword from './auth/ResetPassword';
 import { ApiUrl } from '../helpers/ApiUrl';
 import Driver from './private/driver/Driver';
-import Taxis from "./public/taxis/Taxis"
 import Inbox from "./private/inbox/Inbox"
+import DriverLocationUpdater from '../helpers/DriverLocationUpdater';
+import SingleMessage from './private/inbox/SingleMessage';
 // import FCMHandler from '../helpers/FCMHandler';
 
 // Create the Stack Navigator for Login and Register screens
@@ -48,66 +47,6 @@ const HomeBar = React.memo(() => {
   );
 });
 
-// TaxiBar Screen component (memoized)
-const TaxiBar = React.memo(() => {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name="Taxis" component={Taxis} 
-      
-      options={({ navigation }) => ({
-        headerShown: true,
-        headerTitle: "Taxis",
-        headerLeft: () => (
-          <TouchableOpacity 
-            onPress={() => navigation.goBack()}
-            style={{ marginLeft: 10 }}
-          >
-            <Icon name="arrow-back" size={24} color="#000" />
-          </TouchableOpacity>
-        )
-      })} 
-      
-      />
-    
-      
-      <Stack.Screen name="Login" component={Login} 
-      
-      options={({ navigation }) => ({
-        headerShown: true,
-        headerTitle: "Log In",
-        headerLeft: () => (
-          <TouchableOpacity 
-            onPress={() => navigation.goBack()}
-            style={{ marginLeft: 10 }}
-          >
-            <Icon name="arrow-back" size={24} color="#000" />
-          </TouchableOpacity>
-        )
-      })} 
-      
-      />
-      <Stack.Screen name="Register" component={Register} 
-      
-      options={({ navigation }) => ({
-        headerShown: true,
-        headerTitle: "Register",
-        headerLeft: () => (
-          <TouchableOpacity 
-            onPress={() => navigation.goBack()}
-            style={{ marginLeft: 10 }}
-          >
-            <Icon name="arrow-back" size={24} color="#000" />
-          </TouchableOpacity>
-        )
-      })} 
-      
-      
-      />
-      
-
-    </Stack.Navigator>
-  );
-});
 
 // Authentication Stack (Login and Register Screens)
 const AuthStack = React.memo(() => {
@@ -130,35 +69,8 @@ const AuthStack = React.memo(() => {
       
       
       />
-      <Stack.Screen name="Register" component={Register} options={({ navigation }) => ({
-  headerShown: true,
-  headerTitle: "Register",
-  headerLeft: () => (
-    <TouchableOpacity 
-      onPress={() => navigation.goBack()}
-      style={{ marginLeft: 10 }}
-    >
-      <Icon name="arrow-back" size={24} color="#000" />
-    </TouchableOpacity>
-  )
-})} 
- />
-      <Stack.Screen name="RegistrationVeri" component={RegistrationVeri} 
-      options={({ navigation }) => ({
-        headerShown: true,
-        headerTitle: "Verify",
-        headerLeft: () => (
-          <TouchableOpacity 
-            onPress={() => navigation.goBack()}
-            style={{ marginLeft: 10 }}
-          >
-            <Icon name="arrow-back" size={24} color="#000" />
-          </TouchableOpacity>
-        )
-      })} 
       
       
-      />
       <Stack.Screen name="ForgotPassword" component={ForgotPassword} 
       
       options={({ navigation }) => ({
@@ -276,6 +188,29 @@ const MessagingStack = React.memo(() => {
       
       
       />
+
+
+<Stack.Screen name="SingleMessage" component={SingleMessage} 
+      
+      options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: "Message",
+        headerLeft: () => (
+          <TouchableOpacity 
+            onPress={() => navigation.goBack()}
+            style={{ marginLeft: 10 }}
+          >
+            <Icon name="arrow-back" size={24} color="#000" />
+          </TouchableOpacity>
+        )
+      })} 
+      
+      
+      />
+
+
+
+
       
       
     </Stack.Navigator>
@@ -288,8 +223,7 @@ const MessagingStack = React.memo(() => {
 function AppNavigator() {
   const { token, user, loading } = useSelector((state) => state.auth);
   const[unreadMessagesCount, setUnreadMessagesCount] = useState([])
-    const [loadingUser, setLoadingUser] = useState(true); // Optional: You can rely on Redux `loading` instead
-
+    
       const navigationRef = React.useRef(null)
 
 
@@ -369,7 +303,9 @@ function AppNavigator() {
  
 
       {/* navigation here */}
-        {/* {token && user?.role === 11 && <DriverLocationUpdater driverId={user?._id} /> } */}
+         {token && user?.role === 11 && <DriverLocationUpdater driverId={user?._id} /> }
+
+        
 
 
       <Tab.Navigator

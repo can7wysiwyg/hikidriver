@@ -19,34 +19,6 @@ export const initializeAuth = createAsyncThunk(
   }
 );
 
-export const registerUser = createAsyncThunk(
-  "auth/registerUser",
-  async (userData, { rejectWithValue }) => {
-    try {
-      const response = await fetch(`${ApiUrl}/user_register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(userData),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        return rejectWithValue({
-          type: "REGISTRATION_ERROR",
-          message: data.msg,
-        });
-      }
-
-      return data;
-    } catch (error) {
-      return rejectWithValue({
-        type: "REGISTRATION_ERROR",
-        // message: 'Registration failed. Please try again.'
-      });
-    }
-  }
-);
 
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
@@ -142,22 +114,6 @@ const authSlice = createSlice({
       .addCase(initializeAuth.fulfilled, (state) => {
         state.isInitialized = true;
         state.loading = false;
-      })
-
-      .addCase(registerUser.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-        state.errorType = null;
-      })
-      .addCase(registerUser.fulfilled, (state, action) => {
-        state.loading = false;
-        state.user = action.payload.user;
-        state.token = action.payload.token;
-      })
-      .addCase(registerUser.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload.message;
-        state.errorType = action.payload.type;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
