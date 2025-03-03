@@ -1,11 +1,129 @@
-import React from 'react'
-import { Text, View } from 'react-native'
 
-export default function Driver() {
+import React, { useState } from 'react';
+import { 
+  StyleSheet, 
+  View, 
+  Text, 
+  TouchableOpacity, 
+  SafeAreaView, 
+  StatusBar,
+  Switch,
+  ScrollView
+} from 'react-native';
+import { 
+  MaterialIcons, 
+  FontAwesome5, 
+  Ionicons, 
+  MaterialCommunityIcons 
+} from '@expo/vector-icons';
+import { styles } from './driverStyles';
+import { useSelector } from 'react-redux';
+
+
+
+export default function Driver ({navigation})  {
+  const { token, user } = useSelector((state) => state.auth);
+  
+  const [earnings, setEarnings] = useState(85.50);
+  const [trips, setTrips] = useState(6);
+
   return (
-    <View>
-<Text>Driver</Text>
+    <SafeAreaView style={styles.container}>
+      <StatusBar backgroundColor="#f8f9fa" barStyle="dark-content" />
+      
+      {/* Header */}
+      <View style={styles.header}>
+        <View style={styles.headerContent}>
+          <Text style={styles.headerTitle}>{user?.fullname}</Text>
+          
+        </View>
+        
+        {/* Summary Row */}
+        <View style={styles.summaryRow}>
+          <View style={styles.summaryItem}>
+            <MaterialIcons name="attach-money" size={24} color="#16a085" />
+            <Text style={styles.summaryValue}>${earnings.toFixed(2)}</Text>
+            <Text style={styles.summaryLabel}>Today</Text>
+          </View>
+          <View style={styles.summaryItem}>
+            <FontAwesome5 name="route" size={20} color="#16a085" />
+            <Text style={styles.summaryValue}>{trips}</Text>
+            <Text style={styles.summaryLabel}>Trips</Text>
+          </View>
+        </View>
+      </View>
+      
+      {/* Main Content */}
+      <ScrollView style={styles.content}>
+        <Text style={styles.sectionTitle}>Quick Actions</Text>
+        
+        <View style={styles.actionGrid}>
+          <TouchableOpacity style={styles.actionItem} onPress={() => navigation.navigate('viewcar')}>
+            <View style={styles.actionIcon}>
+              <Ionicons name="car" size={24} color="#16a085" />
+            </View>
+            <Text style={styles.actionText}>View Car</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.actionItem}>
+            <View style={styles.actionIcon}>
+              <MaterialCommunityIcons name="gas-station" size={24} color="#16a085" />
+            </View>
+            <Text style={styles.actionText}>Fuel Log</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.actionItem}>
+            <View style={styles.actionIcon}>
+              <FontAwesome5 name="map-marked-alt" size={22} color="#16a085" />
+            </View>
+            <Text style={styles.actionText}>Navigation</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.actionItem}>
+            <View style={styles.actionIcon}>
+              <MaterialIcons name="history" size={24} color="#16a085" />
+            </View>
+            <Text style={styles.actionText}>Trip History</Text>
+          </TouchableOpacity>
+        </View>
+        
+        <Text style={styles.sectionTitle}>Today's Summary</Text>
+        
+        <View style={styles.tripSummary}>
+          <TouchableOpacity style={styles.summaryCard}>
+            <View style={styles.summaryCardContent}>
+              <MaterialCommunityIcons name="clock-time-four" size={22} color="#16a085" />
+              <View style={styles.summaryCardText}>
+                <Text style={styles.summaryCardTitle}>Online Hours</Text>
+                <Text style={styles.summaryCardValue}>5h 20m</Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.summaryCard}>
+            <View style={styles.summaryCardContent}>
+              <MaterialIcons name="speed" size={22} color="#16a085" />
+              <View style={styles.summaryCardText}>
+                <Text style={styles.summaryCardTitle}>Total Distance</Text>
+                <Text style={styles.summaryCardValue}>78 km</Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+        </View>
+        
+        <Text style={styles.sectionTitle}>Taxi Requests</Text>
+        
+        
+          <View style={styles.noRideContainer}>
+            <FontAwesome5 name="user" size={40} color="#16a085" />
+            <Text style={styles.noRideText}>See requests...</Text>
+          </View>
+        
+      </ScrollView>
+      
+      
+      
+    </SafeAreaView>
+  );
+};
 
-    </View>
-  )
-}

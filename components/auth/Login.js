@@ -76,7 +76,7 @@ const Login = ({ navigation }) => {
         }}
         style={styles.logo}
       />
-      <Text style={styles.title}>Login to Your Account</Text>
+      <Text style={styles.title}>Driver Login</Text>
 
       <TextInput
         style={styles.input}

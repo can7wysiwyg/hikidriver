@@ -16,6 +16,16 @@ import Driver from './private/driver/Driver';
 import Inbox from "./private/inbox/Inbox"
 import DriverLocationUpdater from '../helpers/DriverLocationUpdater';
 import SingleMessage from './private/inbox/SingleMessage';
+import ViewCar from './private/driver/ViewCar';
+import RouteUpdateList from './private/driver/RouteUpdateList';
+import RouteStartLocation from './private/driver/RouteStartLocation';
+import RouteEndLocation from './private/driver/RouteEndLocation';
+import RouteName from './private/driver/RouteName';
+import RoutePrice from './private/driver/RoutePrice';
+
+
+
+
 // import FCMHandler from '../helpers/FCMHandler';
 
 // Create the Stack Navigator for Login and Register screens
@@ -162,6 +172,133 @@ const DriverStack = React.memo(() => {
       
       />      
       
+
+
+      <Stack.Screen 
+      name="viewcar" 
+      component={ViewCar}
+      options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: "My Taxi",
+        headerLeft: () => (
+          <TouchableOpacity 
+            onPress={() => navigation.goBack()}
+            style={{ marginLeft: 10 }}
+          >
+            <Icon name="arrow-back" size={24} color="#000" />
+          </TouchableOpacity>
+        )
+      })} 
+      
+      
+      />   
+
+
+
+      <Stack.Screen 
+      name="RouteUpdateList" 
+      component={RouteUpdateList}
+      options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: "Route List",
+        headerLeft: () => (
+          <TouchableOpacity 
+            onPress={() => navigation.goBack()}
+            style={{ marginLeft: 10 }}
+          >
+            <Icon name="arrow-back" size={24} color="#000" />
+          </TouchableOpacity>
+        )
+      })} 
+      
+      
+      />
+
+
+      <Stack.Screen 
+      name="RouteName" 
+      component={RouteName}
+      options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: "Route Name",
+        headerLeft: () => (
+          <TouchableOpacity 
+            onPress={() => navigation.goBack()}
+            style={{ marginLeft: 10 }}
+          >
+            <Icon name="arrow-back" size={24} color="#000" />
+          </TouchableOpacity>
+        )
+      })} 
+      
+      
+      />   
+
+
+<Stack.Screen 
+      name="RoutePrice" 
+      component={RoutePrice}
+      options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: "Route Price",
+        headerLeft: () => (
+          <TouchableOpacity 
+            onPress={() => navigation.goBack()}
+            style={{ marginLeft: 10 }}
+          >
+            <Icon name="arrow-back" size={24} color="#000" />
+          </TouchableOpacity>
+        )
+      })} 
+      
+      
+      />   
+
+
+<Stack.Screen 
+      name="RouteStartLocation" 
+      component={RouteStartLocation}
+      options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: "Start Area",
+        headerLeft: () => (
+          <TouchableOpacity 
+            onPress={() => navigation.goBack()}
+            style={{ marginLeft: 10 }}
+          >
+            <Icon name="arrow-back" size={24} color="#000" />
+          </TouchableOpacity>
+        )
+      })} 
+      
+      
+      />   
+
+
+
+<Stack.Screen 
+      name="RouteEndLocation" 
+      component={RouteEndLocation}
+      options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: "End Area",
+        headerLeft: () => (
+          <TouchableOpacity 
+            onPress={() => navigation.goBack()}
+            style={{ marginLeft: 10 }}
+          >
+            <Icon name="arrow-back" size={24} color="#000" />
+          </TouchableOpacity>
+        )
+      })} 
+      
+      
+      />   
+
+
+      
+         
+      
      
     </Stack.Navigator>
   );
@@ -221,8 +358,10 @@ const MessagingStack = React.memo(() => {
 
 
 function AppNavigator() {
-  const { token, user, loading } = useSelector((state) => state.auth);
+  const { token, user } = useSelector((state) => state.auth);
   const[unreadMessagesCount, setUnreadMessagesCount] = useState([])
+
+  console.log(user)
     
       const navigationRef = React.useRef(null)
 
