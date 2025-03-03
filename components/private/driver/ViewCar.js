@@ -5,6 +5,8 @@ import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import {ApiUrl} from "../../../helpers/ApiUrl"  
+import { styles } from './viewCarStyles';
+
 
 export default function ViewCar  ({navigation})  {
 
@@ -76,110 +78,165 @@ const fetchRoute = async() => {
 
 
   const handleUpdateCarInfo = async () => {
-    // try {
-    //   setIsLoading(true);
-      // const response = await axios.put(
-      //   `${ApiUrl}/driver_car_info_update/${user?._id}`,
-      //   carInfo,
-      //   {
-      //     headers: {
-      //       Authorization: `Bearer ${authToken}`,
-      //     },
-      //   }
-      // );
+    try {
+      setIsLoading(true);
+      const response = await axios.put(
+        `${ApiUrl}/driver_car_info_update/${user?._id}`,
+        carInfo,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       
-    //   if (response.data.msg.includes("successfully")) {
-    //     Alert.alert("Success", "Car information updated successfully");
-    //     if (onUpdate) onUpdate();
-    //     setIsEditing(false);
-    //   } else {
-    //     Alert.alert("Error", response.data.msg);
-    //   }
-    // } catch (error) {
-    //   Alert.alert("Error", "Failed to update car information");
-    //   console.error(error);
-    // } finally {
-    //   setIsLoading(false);
-    // }
+      if (response.data.msg.includes("successfully")) {
+        Alert.alert("Success", "Car information updated successfully");
+
+        await fetchTaxi()
+    
+        setIsEditing(false);
+      } else {
+        Alert.alert("Error", response.data.msg);
+      }
+    } catch (error) {
+      Alert.alert("Error", "Failed to update car information");
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleUploadCarPhoto = async () => {
-    // try {
-      // const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+     try {
+      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
       
-      // if (permissionResult.granted === false) {
-      //   Alert.alert("Permission Required", "You need to allow access to your photos");
-      //   return;
-      // }
+      if (permissionResult.granted === false) {
+        Alert.alert("Permission Required", "You need to allow access to your photos");
+        return;
+      }
       
-      // const result = await ImagePicker.launchImageLibraryAsync({
-      //   mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      //   allowsEditing: true,
-      //   aspect: [4, 3],
-      //   quality: 1,
-      // });
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
       
-      // if (!result.canceled) {
-      //   setIsLoading(true);
+      if (!result.canceled) {
+        setIsLoading(true);
         
-      //   // Create form data
-      //   const formData = new FormData();
-      //   formData.append('driverCarPhoto', {
-      //     uri: result.assets[0].uri,
-      //     name: 'car_photo.jpg',
-      //     type: 'image/jpeg',
-      //   });
+        // Create form data
+        const formData = new FormData();
+        formData.append('driverCarPhoto', {
+          uri: result.assets[0].uri,
+          name: 'car_photo.jpg',
+          type: 'image/jpeg',
+        });
         
-      //   const response = await axios.put(
-      //     `${apiBaseUrl}/driver_car_photo_update/${driver.driverId}`,
-      //     formData,
-      //     {
-      //       headers: {
-      //         'Content-Type': 'multipart/form-data',
-      //         Authorization: `Bearer ${authToken}`,
-      //       },
-      //     }
-      //   );
+        const response = await axios.put(
+          `${ApiUrl}/driver_car_photo_update/${user?._id}`,
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         
-      //   if (response.data.msg.includes("successfully")) {
-      //     Alert.alert("Success", "Car photo updated successfully");
-      //     if (onUpdate) onUpdate();
-      //   } else {
-      //     Alert.alert("Error", response.data.msg);
-      //   }
-      // }
-    // } catch (error) {
-    //   Alert.alert("Error", "Failed to upload car photo");
-    //   console.error(error);
-    // } finally {
-    //   setIsLoading(false);
-    // }
+        if (response.data.msg.includes("successfully")) {
+          Alert.alert("Success", "Car photo updated successfully");
+
+          await fetchTaxi()
+          
+        } else {
+          Alert.alert("Error", response.data.msg);
+        }
+      }
+    } catch (error) {
+      Alert.alert("Error", "Failed to upload car photo");
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleUploadLicense = async () => {
-    // Similar to car photo upload but for license
-    Alert.alert("Feature", "License upload feature will be implemented here");
+
+
+    try {
+      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      
+      if (permissionResult.granted === false) {
+        Alert.alert("Permission Required", "You need to allow access to your photos");
+        return;
+      }
+      
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+      
+      if (!result.canceled) {
+        setIsLoading(true);
+        
+        // Create form data
+        const formData = new FormData();
+        formData.append('drivingLicence', {
+          uri: result.assets[0].uri,
+          name: 'licence_photo.jpg',
+          type: 'image/jpeg',
+        });
+        
+        const response = await axios.put(
+          `${ApiUrl}/driver_licence_update/${user?._id}`,
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        
+        if (response.data.msg.includes("successfully")) {
+          Alert.alert("Success", "Car photo updated successfully");
+
+          await fetchTaxi()
+          
+        } else {
+          Alert.alert("Error", response.data.msg);
+        }
+      }
+    } catch (error) {
+      Alert.alert("Error", "Failed to upload car photo");
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+    
+
   };
 
-  const addRoutePoint = () => {
-    // if (newRoutePoint.trim()) {
-    //   setRoutes([...routes, newRoutePoint.trim()]);
-    //   setNewRoutePoint('');
-    // }
-  };
-
-  const removeRoutePoint = (index) => {
-    // const updatedRoutes = [...routes];
-    // updatedRoutes.splice(index, 1);
-    // setRoutes(updatedRoutes);
-  };
-
+  
   const toggleTaxiType = () => {
-    // setCarInfo({
-    //   ...carInfo,
-    //   taxiType: carInfo.taxiType === 'shared' ? 'nonshared' : 'shared'
-    // });
+    setCarInfo({
+      ...carInfo,
+      taxiType: carInfo.taxiType === 'shared' ? 'non-shared' : 'shared'
+    });
   };
+
+  const toggleVehicleType = () => {
+    setCarInfo({
+      ...carInfo,
+      vehicleType: carInfo.vehicleType === 'taxi' ? 'bus' : 'taxi'
+    });
+  };
+
+  
 
 
   if(!carInfo) {
@@ -213,6 +270,25 @@ const fetchRoute = async() => {
           <MaterialIcons name="edit" size={24} color="white" />
         </TouchableOpacity>
       </View>
+
+
+      {/* id or driving licence */}
+      <View style={{margin: 12}}>
+
+      <View style={styles.photoSection}>
+        <Image 
+          source={{uri: carInfo?.drivingLicence }}
+          style={styles.carPhoto}
+          resizeMode="cover"
+        />
+        <TouchableOpacity style={styles.photoEditButton} onPress={handleUploadLicense}>
+          <MaterialIcons name="edit" size={24} color="white" />
+        </TouchableOpacity>
+      </View>
+
+      </View>
+
+      {/* end */}
       
       {/* Car Details Section */}
       <View style={styles.detailsContainer}>
@@ -225,21 +301,42 @@ const fetchRoute = async() => {
         
         {/* Car Info */}
         <View style={styles.infoSection}>
+         
           <View style={styles.infoRow}>
-            <View style={styles.iconContainer}>
-              <Ionicons name="car-sport" size={20} color="#0066cc" />
-            </View>
-            {isEditing ? (
-              <TextInput
-                style={styles.inputField}
-                value={carInfo.vehicleType}
-                onChangeText={(text) => setCarInfo({...carInfo, vehicleType: text})}
-                placeholder="Vehicle Type"
-              />
-            ) : (
-              <Text style={styles.infoText}>{carInfo?.vehicleType || "Not specified"}</Text>
-            )}
-          </View>
+  <View style={styles.iconContainer}>
+    <MaterialIcons 
+      name={carInfo.vehicleType === 'taxi' ? 'local-taxi' : 'directions-bus'} 
+      size={20} 
+      color="#0066cc" 
+    />
+  </View>
+  <View style={styles.taxiTypeContainer}>
+    <Text style={styles.infoText}>Vehicle Type:</Text>
+    {isEditing ? (
+      <TouchableOpacity style={styles.taxiTypeToggle} onPress={toggleVehicleType}>
+        <Text style={styles.toggleText}>
+          {carInfo.vehicleType === 'taxi' ? 'Taxi' : 'Bus'}
+        </Text>
+        <FontAwesome5 
+          name={carInfo.vehicleType === 'taxi' ? 'toggle-on' : 'toggle-off'} 
+          size={20} 
+          color={carInfo.vehicleType === 'taxi' ? "#0066cc" : "#888"}
+        />
+      </TouchableOpacity>
+    ) : (
+      <Text style={[
+        styles.taxiTypeText, 
+        {color: carInfo.vehicleType === 'taxi' ? "#0066cc" : "#888"}
+      ]}>
+        {carInfo.vehicleType === 'taxi' ? 'Taxi' : 'Bus'}
+      </Text>
+    )}
+  </View>
+</View>
+
+          
+          {/* end */}
+
           
           <View style={styles.infoRow}>
             <View style={styles.iconContainer}>
@@ -283,7 +380,7 @@ const fetchRoute = async() => {
               {isEditing ? (
                 <TouchableOpacity style={styles.taxiTypeToggle} onPress={toggleTaxiType}>
                   <Text style={styles.toggleText}>
-                    {carInfo.taxiType === 'shared' ? 'Shared' : 'Non-shared'}
+                    {carInfo.taxiType === 'shared' ? 'shared' : 'non-shared'}
                   </Text>
                   <FontAwesome5 
                     name={carInfo.taxiType === 'shared' ? 'toggle-on' : 'toggle-off'} 
@@ -296,59 +393,29 @@ const fetchRoute = async() => {
                   styles.taxiTypeText, 
                   {color: carInfo.taxiType === 'shared' ? "#0066cc" : "#888"}
                 ]}>
-                  {carInfo.taxiType === 'shared' ? 'Shared' : 'Non-shared'}
+                  {carInfo.taxiType === 'shared' ? 'shared' : 'non-shared'}
                 </Text>
               )}
             </View>
           </View>
           
-          {/* License Info */}
-            {/* <TouchableOpacity style={styles.licenseSection} onPress={handleUploadLicense}>
-            <View style={styles.iconContainer}>
-              <FontAwesome5 name="id-card-alt" size={20} color="#0066cc" />
-            </View>
-            <Text style={styles.licenseText}>
-              {driver?.drivingLicence ? "Update Driving License" : "Upload Driving License"}
-            </Text>
-            <MaterialIcons name="upload-file" size={20} color="#0066cc" />
-          </TouchableOpacity>
-         */}
+          
         </View>
          
         
-        {isEditing && (
+         {isEditing && (
           <TouchableOpacity style={styles.saveButton} onPress={handleUpdateCarInfo}>
             <Text style={styles.saveButtonText}>Save Changes</Text>
           </TouchableOpacity>
-        )}
+        )} 
         
                    {carInfo.taxiType === 'shared' && (
           <View style={styles.routesSection}>
             <View style={styles.routeHeader}>
               <Text style={styles.routeTitle}>Taxi Route</Text>
-              {isEditing && (
-                <TouchableOpacity onPress={() => setShowRouteInput(!showRouteInput)}>
-                  <Ionicons name={showRouteInput ? "remove" : "add"} size={24} color="#0066cc" />
-                </TouchableOpacity>
-              )} 
-
+              
             </View>
                        
-            {isEditing && showRouteInput && (
-              <View style={styles.routeInput}>
-                <TextInput
-                  style={styles.routeInputField}
-                  value={newRoutePoint}
-                  onChangeText={setNewRoutePoint}
-                  placeholder="Add route point"
-                />
-                <TouchableOpacity style={styles.addButton} onPress={addRoutePoint}>
-                  <Text style={styles.addButtonText}>Add</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-             
-
             
 
 <View style={{
@@ -483,203 +550,3 @@ const fetchRoute = async() => {
   );
 };
 
-const styles = StyleSheet.create({
-  scrollViewContent: {
-  flexGrow: 1
-  },
-  container: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5,
-    margin: 16,
-  },
-  loadingOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(255,255,255,0.7)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 999,
-  },
-  photoSection: {
-    position: 'relative',
-    height: 200,
-  },
-  carPhoto: {
-    width: '100%',
-    height: '100%',
-  },
-  photoEditButton: {
-    position: 'absolute',
-    bottom: 10,
-    right: 10,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    borderRadius: 20,
-    width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  detailsContainer: {
-    padding: 16,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-    marginBottom: 16,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  infoSection: {
-    marginBottom: 16,
-  },
-  infoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 8,
-  },
-  iconContainer: {
-    width: 36,
-    height: 36,
-    backgroundColor: '#f0f8ff',
-    borderRadius: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  infoText: {
-    fontSize: 16,
-    color: '#333',
-    flex: 1,
-  },
-  inputField: {
-    flex: 1,
-    height: 40,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 4,
-    paddingHorizontal: 8,
-    fontSize: 16,
-  },
-  taxiTypeContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  taxiTypeToggle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginLeft: 8,
-  },
-  toggleText: {
-    marginRight: 8,
-    fontSize: 16,
-    color: '#333',
-  },
-  taxiTypeText: {
-    marginLeft: 8,
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  licenseSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 16,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
-  },
-  licenseText: {
-    flex: 1,
-    fontSize: 16,
-    color: '#0066cc',
-    marginLeft: 8,
-  },
-  saveButton: {
-    backgroundColor: '#0066cc',
-    borderRadius: 8,
-    padding: 12,
-    alignItems: 'center',
-    marginTop: 8,
-    marginBottom: 16,
-  },
-  saveButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  routesSection: {
-    marginTop: 16,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
-  },
-  routeHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  routeTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-  },
-  routeInput: {
-    flexDirection: 'row',
-    marginBottom: 16,
-  },
-  routeInputField: {
-    flex: 1,
-    height: 40,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 4,
-    paddingHorizontal: 8,
-    marginRight: 8,
-  },
-  addButton: {
-    backgroundColor: '#0066cc',
-    borderRadius: 4,
-    paddingHorizontal: 12,
-    justifyContent: 'center',
-  },
-  addButtonText: {
-    color: '#fff',
-    fontWeight: '600',
-  },
-  routePointsList: {
-    marginTop: 8,
-  },
-  routePoint: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 4,
-  },
-  routePointText: {
-    flex: 1,
-    fontSize: 15,
-    color: '#444',
-  },
-  noRouteText: {
-    fontSize: 15,
-    color: '#888',
-    fontStyle: 'italic',
-    marginTop: 8,
-  }
-});
