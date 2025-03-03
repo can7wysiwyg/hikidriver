@@ -22,6 +22,7 @@ import RouteStartLocation from './private/driver/RouteStartLocation';
 import RouteEndLocation from './private/driver/RouteEndLocation';
 import RouteName from './private/driver/RouteName';
 import RoutePrice from './private/driver/RoutePrice';
+import PostTaxiRoute from './private/driver/PostTaxiRoute';
 
 
 
@@ -195,6 +196,27 @@ const DriverStack = React.memo(() => {
 
 
 
+<Stack.Screen 
+      name="PostTaxiRoute" 
+      component={PostTaxiRoute}
+      options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: "Taxi Route",
+        headerLeft: () => (
+          <TouchableOpacity 
+            onPress={() => navigation.goBack()}
+            style={{ marginLeft: 10 }}
+          >
+            <Icon name="arrow-back" size={24} color="#000" />
+          </TouchableOpacity>
+        )
+      })} 
+      
+      
+      />
+
+
+
       <Stack.Screen 
       name="RouteUpdateList" 
       component={RouteUpdateList}
@@ -361,7 +383,7 @@ function AppNavigator() {
   const { token, user } = useSelector((state) => state.auth);
   const[unreadMessagesCount, setUnreadMessagesCount] = useState([])
 
-  console.log(user)
+
     
       const navigationRef = React.useRef(null)
 

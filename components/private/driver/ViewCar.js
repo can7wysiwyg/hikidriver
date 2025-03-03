@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, TextInput, Alert, ActivityIndicator, ScrollView } from 'react-native';
-import { MaterialIcons, FontAwesome5, Ionicons, Entypo } from '@expo/vector-icons';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, Image,  TouchableOpacity, TextInput, Alert, ActivityIndicator, ScrollView, RefreshControl,
+} from 'react-native';
+import { MaterialIcons, FontAwesome5, Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
@@ -15,12 +16,20 @@ export default function ViewCar  ({navigation})  {
   // State for editable fields
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [refreshing, setRefreshing] = useState(false);
   const [carInfo, setCarInfo] = useState({})
   const [routes, setRoutes] = useState({});
-  const [showRouteInput, setShowRouteInput] = useState(false);
-  const [newRoutePoint, setNewRoutePoint] = useState('');
 
+  const onRefresh = useCallback( async() => {
+    setRefreshing(true);
+    fetchTaxi()
+    fetchRoute()
+    
+   
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
 
 
 useEffect(() => {
@@ -31,6 +40,7 @@ useEffect(() => {
 const fetchTaxi = async() => {
 
   try {
+   
     setIsLoading(true);
 
     const response = await fetch(`${ApiUrl}/single_driver/${user?._id}`, {
@@ -49,6 +59,7 @@ const fetchTaxi = async() => {
       
       console.log("failed to fetch car info", error);
      } finally {
+      
        setIsLoading(false);
      }
 
@@ -57,6 +68,7 @@ const fetchTaxi = async() => {
 
 const fetchRoute = async() => {
   try {
+   
     setIsLoading(true)
     const response = await axios.get(`${ApiUrl}/driver_see_my_routes/${user?._id}`, {
       headers: {
@@ -70,6 +82,7 @@ const fetchRoute = async() => {
       
     console.log("failed to fetch route info", error);
    } finally {
+  
      setIsLoading(false);
    }
 
@@ -251,7 +264,17 @@ const fetchRoute = async() => {
   return (
     <ScrollView
     contentContainerStyle={styles.scrollViewContent}
-              showsVerticalScrollIndicator={false}>
+              showsVerticalScrollIndicator={false}
+              
+              refreshControl={
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
+                  colors={['#3E7BFA']}
+                  tintColor="#3E7BFA"
+                />
+              }   
+              >
     <View style={styles.container}>
       {isLoading && (
         <View style={styles.loadingOverlay}>
@@ -521,12 +544,27 @@ const fetchRoute = async() => {
       </View>
     ))
   ) : (
-    <Text style={{
-      fontSize: 15,
-      color: '#888',
-      fontStyle: 'italic',
-      marginTop: 8,
-    }}>No routes available</Text>
+    
+<TouchableOpacity
+          style={{
+            backgroundColor: '#f0f7ff',
+            borderWidth: 1,
+            borderColor: '#0047AB',
+            borderRadius: 4,
+            paddingVertical: 8,
+            paddingHorizontal: 12,
+            alignItems: 'center',
+            marginTop: 8,
+          }}
+           onPress={() => navigation.navigate("PostTaxiRoute", { data: carInfo?.driverId })}
+        >
+          <Text style={{
+            color: '#0047AB',
+            fontWeight: '500',
+          }}>Post Route</Text>
+        </TouchableOpacity>
+
+
   )}
 </View>
 
