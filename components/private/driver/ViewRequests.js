@@ -1,46 +1,50 @@
-import React, { useCallback, useState, useEffect } from 'react';
-import { 
-  Text, 
-  View, 
-  StyleSheet, 
-  FlatList, 
-  TouchableOpacity, 
+import React, { useCallback, useState, useEffect } from "react";
+import {
+  Text,
+  View,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
   RefreshControl,
-  Alert
-} from 'react-native';
-import { 
-  MaterialIcons, 
-  FontAwesome5, 
-  Ionicons, 
-  MaterialCommunityIcons 
-} from '@expo/vector-icons';
-import { useSelector } from 'react-redux';
-import { ApiUrl } from '../../../helpers/ApiUrl';
-import axios from 'axios';
-
+  Alert,
+} from "react-native";
+import {
+  MaterialIcons,
+  FontAwesome5,
+  Ionicons,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
+import { useSelector } from "react-redux";
+import { ApiUrl } from "../../../helpers/ApiUrl";
+import axios from "axios";
+import { styles } from "./viewRequestStyles";
 
 export default function ViewRequests() {
   const { token, user } = useSelector((state) => state.auth);
   const [passengers, setPassengers] = useState({});
   const [refreshing, setRefreshing] = useState(false);
-  const [carInfo, setCarInfo] = useState({})
+  const [carInfo, setCarInfo] = useState({});
+  const [isDisabled, setIsDisabled] = useState(false);
 
   useEffect(() => {
     fetchPassengers();
-    fetchTaxi()
+    fetchTaxi();
   }, []);
 
-  const fetchPassengers = async() => {
+  const fetchPassengers = async () => {
     try {
       setRefreshing(true);
-      const response = await fetch(`${ApiUrl}/show_boarded_taxi_to_owner/${user?._id}`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
+      const response = await fetch(
+        `${ApiUrl}/show_boarded_taxi_to_owner/${user?._id}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
-      });
-      
+      );
+
       const fetchedData = await response.json();
       setPassengers(fetchedData.passengers);
     } catch (error) {
@@ -51,58 +55,86 @@ export default function ViewRequests() {
     }
   };
 
-
-  const fetchTaxi = async() => {
-  
+  const fetchTaxi = async () => {
     try {
-     
-    
-  
       const response = await fetch(`${ApiUrl}/single_driver/${user?._id}`, {
-        method: 'GET',
-       })
-       if (!response.ok) {
+        method: "GET",
+      });
+      if (!response.ok) {
         throw new Error(`Failed to fetch driver data: ${response.statusText}`);
       }
-  
+
       const fetchedData = await response.json();
-  
-      setCarInfo(fetchedData)
-  
-      
+
+      setCarInfo(fetchedData);
     } catch (error) {
-        
-        console.log("failed to fetch car info", error);
-       } finally {
-        
-         
-       }
-  
-  }
-  
+      console.log("failed to fetch car info", error);
+    } finally {
+    }
+  };
 
   const onRefresh = useCallback(() => {
     fetchPassengers();
-    fetchTaxi()
+    fetchTaxi();
   }, []);
 
-  const handleDeboardPassenger = async (bookingId) => {
+  const confirmStartJourney = (tripId) => {
+    Alert.alert(
+      "Start Trip",
+      "Are you sure you want to start this trip?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Yes, Start",
+          onPress: () => startJourney(tripId),
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
+  const startJourney = async (tripId) => {
     try {
-      const response = await fetch(`${ApiUrl}/deboard_passenger/${bookingId}`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
+      let driverId = carInfo.driverId;
+
+      setIsDisabled(true);
+
+      await axios.put(
+        `${ApiUrl}/driver_start_trip_non_shared/${tripId}/${driverId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      });
-      
-      const result = await response.json();
-      
-      if (result.success) {
+      );
+
+      await fetchPassengers();
+    } catch (error) {
+      console.error("Error starting trip:", error.message);
+      setIsDisabled(false);
+    }
+  };
+
+  const handleDeboardPassenger = async () => {
+    try {
+      const response = await axios.delete(
+        `${ApiUrl}/de_board_passenger_from_non_shared_taxi/${user?._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.msg) {
         Alert.alert("Success", "Passenger deboarded successfully");
         fetchPassengers(); // Refresh the list
       } else {
-        Alert.alert("Error", result.message || "Failed to deboard passenger");
+        Alert.alert("Error", "Failed to deboard passenger");
       }
     } catch (error) {
       console.log("Error while deboarding passenger", error);
@@ -110,32 +142,26 @@ export default function ViewRequests() {
     }
   };
 
-
-
-  const deboardSharedPassenger = async(userId) => {
-
-let driverId = carInfo.driverId
-
+  const deboardSharedPassenger = async (userId) => {
+    let driverId = carInfo.driverId;
 
     try {
       const response = await axios.delete(
         `${ApiUrl}/de_board_from_shared_taxi/${userId}/${driverId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-    
-        if (response.data.msg) {
-          Alert.alert("Success", "Passenger deboarded successfully");
-          fetchPassengers(); 
-        } else {
-          Alert.alert("Error", "Failed to deboard passenger");
-        }
-      } catch (error) {
-        console.log("Error while deboarding shared passenger", error);
-        Alert.alert("Error", "Failed to deboard passenger. Please try again.");
+
+      if (response.data.msg) {
+        Alert.alert("Success", "Passenger deboarded successfully");
+        fetchPassengers();
+      } else {
+        Alert.alert("Error", "Failed to deboard passenger");
       }
-
-
-  }
+    } catch (error) {
+      console.log("Error while deboarding shared passenger", error);
+      Alert.alert("Error", "Failed to deboard passenger. Please try again.");
+    }
+  };
 
   // Shared taxi UI rendering
   const renderSharedTaxiItem = ({ item }) => (
@@ -154,7 +180,7 @@ let driverId = carInfo.driverId
           <Text style={styles.codeText}>Code: {item.confirmationCode}</Text>
         </View>
       </View>
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.deboardButton}
         onPress={() => deboardSharedPassenger(item?.userId)}
       >
@@ -195,22 +221,30 @@ let driverId = carInfo.driverId
             <MaterialIcons name="location-on" size={20} color="#e74c3c" />
             <View style={styles.locationDetail}>
               <Text style={styles.locationLabel}>Pickup</Text>
-              <Text style={styles.locationValue}>{passengers.pickupLocation}</Text>
+              <Text style={styles.locationValue}>
+                <PickUp passengers={passengers} />{" "}
+              </Text>
             </View>
           </View>
-          
+
           <View style={styles.locationConnector}>
             <View style={styles.verticalLine}></View>
           </View>
-          
+
           <View style={styles.detailRow}>
-            <MaterialIcons name="location-searching" size={20} color="#3498db" />
+            <MaterialIcons
+              name="location-searching"
+              size={20}
+              color="#3498db"
+            />
             <View style={styles.locationDetail}>
               <Text style={styles.locationLabel}>Dropoff</Text>
-              <Text style={styles.locationValue}>{passengers.dropoffLocation}</Text>
+              <Text style={styles.locationValue}>
+                {passengers.dropoffLocation}
+              </Text>
             </View>
           </View>
-          
+
           <View style={styles.tripInfo}>
             <View style={styles.tripInfoItem}>
               <FontAwesome5 name="road" size={16} color="#7f8c8d" />
@@ -222,14 +256,59 @@ let driverId = carInfo.driverId
             </View>
             <View style={styles.tripInfoItem}>
               <FontAwesome5 name="ticket-alt" size={16} color="#9b59b6" />
-              <Text style={styles.tripInfoText}>{passengers.confirmationCode}</Text>
+              <Text style={styles.tripInfoText}>
+                {passengers.confirmationCode}
+              </Text>
             </View>
           </View>
         </View>
-        
-        <TouchableOpacity 
+
+        <View style={{ margin: 12 }}>
+          {passengers.rideStatus === "in transit" ? (
+            <Text style={{ color: "red", fontWeight: "bold" }}>
+              You Are In Transit
+            </Text>
+          ) : (
+            <TouchableOpacity
+              onPress={
+                !isDisabled ? () => confirmStartJourney(passengers?._id) : null
+              }
+              style={{
+                backgroundColor: isDisabled ? "#888" : "#007BFF",
+                borderRadius: 50,
+                padding: 15,
+                flexDirection: "row",
+                alignItems: "center",
+                shadowColor: "#000",
+                shadowOpacity: 0.3,
+                shadowOffset: { width: 0, height: 2 },
+                shadowRadius: 3,
+                elevation: 5,
+              }}
+              disabled={isDisabled}
+            >
+              <MaterialIcons
+                name="play-circle-outline"
+                size={24}
+                color="#fff"
+                style={{ marginRight: 10 }}
+              />
+              <Text
+                style={{
+                  color: "#fff",
+                  fontSize: 16,
+                  fontWeight: "bold",
+                }}
+              >
+                {isDisabled ? "Started..." : "Start Trip"}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+
+        <TouchableOpacity
           style={styles.deboardButton}
-          onPress={() => handleDeboardPassenger(passengers._id)}
+          onPress={() => handleDeboardPassenger()}
         >
           <Text style={styles.deboardButtonText}>Deboard Passenger</Text>
         </TouchableOpacity>
@@ -242,7 +321,7 @@ let driverId = carInfo.driverId
     <View style={styles.emptyContainer}>
       <Ionicons name="car-outline" size={50} color="#ccc" />
       <Text style={styles.emptyText}>
-        No {passengers.bookings ? 'shared' : 'individual'} taxi requests
+        No {passengers.bookings ? "shared" : "individual"} taxi requests
       </Text>
     </View>
   );
@@ -254,10 +333,10 @@ let driverId = carInfo.driverId
       if (passengers.bookings.length === 0) {
         return renderEmptyComponent();
       }
-      
+
       return (
         <FlatList
-          data={passengers.bookings}
+          data={passengers?.bookings}
           keyExtractor={(item) => item._id}
           renderItem={renderSharedTaxiItem}
           ListHeaderComponent={renderSharedTaxiHeader}
@@ -275,9 +354,13 @@ let driverId = carInfo.driverId
       // Non-shared taxi case
       return (
         <FlatList
-          data={[{ id: '1' }]} // Just need one item to render the non-shared UI
+          data={[{ id: "1" }]} // Just need one item to render the non-shared UI
           keyExtractor={(item) => item.id}
-          renderItem={() => passengers && passengers._id ? renderNonSharedTaxi() : renderEmptyComponent()}
+          renderItem={() =>
+            passengers && passengers._id
+              ? renderNonSharedTaxi()
+              : renderEmptyComponent()
+          }
           contentContainerStyle={styles.nonSharedContainer}
           refreshControl={
             <RefreshControl
@@ -299,190 +382,38 @@ let driverId = carInfo.driverId
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    padding: 16,
-    color: '#2c3e50',
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 40,
-  },
-  emptyText: {
-    marginTop: 10,
-    fontSize: 16,
-    color: '#95a5a6',
-  },
-  // Shared taxi styles
-  sharedContainer: {
-    padding: 12,
-    flexGrow: 1,
-  },
-  taxiInfoContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
-    elevation: 3,
-  },
-  taxiInfoHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  taxiCapacityText: {
-    fontSize: 16,
-    fontWeight: '500',
-    marginLeft: 8,
-    color: '#34495e',
-  },
-  bookingsHeader: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: 8,
-    color: '#2c3e50',
-  },
-  bookingItem: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 12,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
-    elevation: 3,
-  },
-  bookingInfo: {
-    flex: 1,
-  },
-  locationRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  locationText: {
-    fontSize: 15,
-    marginLeft: 8,
-    color: '#34495e',
-  },
-  codeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  codeText: {
-    fontSize: 14,
-    marginLeft: 8,
-    color: '#9b59b6',
-    fontWeight: '500',
-  },
-  deboardButton: {
-    backgroundColor: '#e74c3c',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 4,
-  },
-  deboardButtonText: {
-    color: '#fff',
-    fontWeight: '500',
-  },
-  // Non-shared taxi styles
-  nonSharedContainer: {
-    padding: 12,
-    flexGrow: 1,
-  },
-  requestCard: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  requestHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  requestTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginLeft: 8,
-    color: '#2c3e50',
-    flex: 1,
-  },
-  statusBadge: {
-    backgroundColor: '#3498db',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
-  },
-  statusText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: '500',
-    textTransform: 'capitalize',
-  },
-  requestDetails: {
-    marginBottom: 16,
-  },
-  detailRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 12,
-  },
-  locationDetail: {
-    marginLeft: 12,
-    flex: 1,
-  },
-  locationLabel: {
-    fontSize: 14,
-    color: '#7f8c8d',
-  },
-  locationValue: {
-    fontSize: 16,
-    color: '#34495e',
-    marginTop: 2,
-  },
-  locationConnector: {
-    marginLeft: 10,
-    height: 20,
-    alignItems: 'center',
-  },
-  verticalLine: {
-    width: 1,
-    height: '100%',
-    backgroundColor: '#bdc3c7',
-  },
-  tripInfo: {
-    flexDirection: 'row',
-    marginTop: 12,
-    justifyContent: 'space-between',
-  },
-  tripInfoItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  tripInfoText: {
-    marginLeft: 6,
-    fontSize: 14,
-    color: '#7f8c8d',
-  },
-});
+const PickUp = ({ passengers }) => {
+  const [place, setPlace] = useState({});
+
+  useEffect(() => {
+    const fetchPlaceName = async () => {
+      const apiKey = "9c9c94ac-7c45-4141-8427-663723d70743";
+
+      const addressName = await axios.get(
+        `https://graphhopper.com/api/1/geocode?point=${passengers?.pickupCoordinates?.latitude},${passengers?.pickupCoordinates?.longitude}&reverse=true&key=${apiKey}`
+      );
+
+      const data = addressName.data.hits[0];
+
+      setPlace(data);
+    };
+
+    fetchPlaceName();
+  }, []);
+
+  
+
+
+  return (
+    <>
+      
+        
+              {place.name},{" "}
+            {place.state}, {place.country}{" "}
+          
+          
+          
+    </>
+  );
+};
+
