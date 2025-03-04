@@ -19,7 +19,7 @@ export default function ViewCar  ({navigation})  {
   const [refreshing, setRefreshing] = useState(false);
   const [carInfo, setCarInfo] = useState({})
   const [routes, setRoutes] = useState({});
-
+ 
   const onRefresh = useCallback( async() => {
     setRefreshing(true);
     fetchTaxi()

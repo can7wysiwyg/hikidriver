@@ -1,14 +1,13 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { 
-  StyleSheet, 
-  View, 
+   View, 
   Text, 
   TouchableOpacity, 
   SafeAreaView, 
   StatusBar,
-  Switch,
-  ScrollView
+  ScrollView,
+  RefreshControl
 } from 'react-native';
 import { 
   MaterialIcons, 
@@ -18,14 +17,55 @@ import {
 } from '@expo/vector-icons';
 import { styles } from './driverStyles';
 import { useSelector } from 'react-redux';
+import { ApiUrl } from '../../../helpers/ApiUrl';
 
 
 
 export default function Driver ({navigation})  {
   const { token, user } = useSelector((state) => state.auth);
-  
+  const [refreshing, setRefreshing] = useState(false);
+  const[passengers, setPassengers] = useState({})  
   const [earnings, setEarnings] = useState(85.50);
   const [trips, setTrips] = useState(6);
+
+  useEffect(() => {
+    fetchPassengers()
+}, [])
+
+
+
+ const fetchPassengers = async() => {
+
+  try {
+const response = await fetch(`${ApiUrl}/show_boarded_taxi_to_owner/${user?._id}`, {
+  method: 'GET',
+  headers: {
+    Authorization: `Bearer ${token}`,
+    'Content-Type': 'application/json'
+  }
+})
+
+const fetchedData = await response.json()
+
+setPassengers(fetchedData.passengers)
+
+    
+  } catch (error) {
+    console.log("Error while fetching passengers", error)
+  }
+
+ }
+
+ 
+const onRefresh = useCallback( async() => {
+    setRefreshing(true);
+    fetchPassengers()
+   
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -54,7 +94,15 @@ export default function Driver ({navigation})  {
       </View>
       
       {/* Main Content */}
-      <ScrollView style={styles.content}>
+      <ScrollView style={styles.content}
+      refreshControl={
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                    colors={["#2ecc71"]}
+                  /> }
+      
+      >
         <Text style={styles.sectionTitle}>Quick Actions</Text>
         
         <View style={styles.actionGrid}>
@@ -116,7 +164,12 @@ export default function Driver ({navigation})  {
         
           <View style={styles.noRideContainer}>
             <FontAwesome5 name="user" size={40} color="#16a085" />
-            <Text style={styles.noRideText}>See requests...</Text>
+            {
+              passengers ? <TouchableOpacity onPress={() => navigation.navigate('ViewRequests')} >
+<Text style={styles.noRideText}>See requests...</Text>
+              </TouchableOpacity> : <Text style={styles.noRideText}>No requests...</Text>
+            }
+            
           </View>
         
       </ScrollView>

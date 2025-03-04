@@ -23,6 +23,7 @@ import RouteEndLocation from './private/driver/RouteEndLocation';
 import RouteName from './private/driver/RouteName';
 import RoutePrice from './private/driver/RoutePrice';
 import PostTaxiRoute from './private/driver/PostTaxiRoute';
+import ViewRequests from './private/driver/ViewRequests';
 
 
 
@@ -51,6 +52,62 @@ const HomeBar = React.memo(() => {
       
       
       />
+
+      <Stack.Screen name="Login" component={Login} 
+      
+      options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: "Log in",
+        headerLeft: () => (
+          <TouchableOpacity 
+            onPress={() => navigation.goBack()}
+            style={{ marginLeft: 10 }}
+          >
+            <Icon name="arrow-back" size={24} color="#000" />
+          </TouchableOpacity>
+        )
+      })} 
+      
+      
+      />
+      
+      
+      <Stack.Screen name="ForgotPassword" component={ForgotPassword} 
+      
+      options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: "Forgot Password",
+        headerLeft: () => (
+          <TouchableOpacity 
+            onPress={() => navigation.goBack()}
+            style={{ marginLeft: 10 }}
+          >
+            <Icon name="arrow-back" size={24} color="#000" />
+          </TouchableOpacity>
+        )
+      })} 
+      
+      
+      />
+      <Stack.Screen name="ResetPassword" component={ResetPassword} 
+      
+      options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: "Reset Password",
+        headerLeft: () => (
+          <TouchableOpacity 
+            onPress={() => navigation.goBack()}
+            style={{ marginLeft: 10 }}
+          >
+            <Icon name="arrow-back" size={24} color="#000" />
+          </TouchableOpacity>
+        )
+      })} 
+      
+      
+      />
+
+
 
       
     
@@ -194,6 +251,25 @@ const DriverStack = React.memo(() => {
       
       />   
 
+<Stack.Screen 
+      name="ViewRequests" 
+      component={ViewRequests}
+      options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: "Requests",
+        headerLeft: () => (
+          <TouchableOpacity 
+            onPress={() => navigation.goBack()}
+            style={{ marginLeft: 10 }}
+          >
+            <Icon name="arrow-back" size={24} color="#000" />
+          </TouchableOpacity>
+        )
+      })} 
+      
+      
+      />      
+      
 
 
 <Stack.Screen 

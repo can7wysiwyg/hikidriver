@@ -140,7 +140,7 @@ export const styles = StyleSheet.create({
       marginBottom: 30
     },
     noRideText: {
-      fontSize: 16,
+      fontSize: 24,
       color: '#333333',
       marginTop: 12,
     },
