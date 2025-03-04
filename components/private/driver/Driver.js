@@ -113,11 +113,11 @@ const onRefresh = useCallback( async() => {
             <Text style={styles.actionText}>View Car</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.actionItem}>
+          <TouchableOpacity style={styles.actionItem} onPress={() => navigation.navigate('PaymentSystems') }>
             <View style={styles.actionIcon}>
-              <MaterialCommunityIcons name="gas-station" size={24} color="#16a085" />
+              <MaterialCommunityIcons name="wallet" size={24} color="#16a085" />
             </View>
-            <Text style={styles.actionText}>Fuel Log</Text>
+            <Text style={styles.actionText}>Payment Systems</Text>
           </TouchableOpacity>
           
           <TouchableOpacity style={styles.actionItem}>

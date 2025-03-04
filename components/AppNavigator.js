@@ -24,6 +24,7 @@ import RouteName from './private/driver/RouteName';
 import RoutePrice from './private/driver/RoutePrice';
 import PostTaxiRoute from './private/driver/PostTaxiRoute';
 import ViewRequests from './private/driver/ViewRequests';
+import PaymentSystems from './private/driver/PaymentSystems';
 
 
 
@@ -269,6 +270,28 @@ const DriverStack = React.memo(() => {
       
       
       />      
+
+
+
+<Stack.Screen 
+      name="PaymentSystems" 
+      component={PaymentSystems}
+      options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: "Payment Systems",
+        headerLeft: () => (
+          <TouchableOpacity 
+            onPress={() => navigation.goBack()}
+            style={{ marginLeft: 10 }}
+          >
+            <Icon name="arrow-back" size={24} color="#000" />
+          </TouchableOpacity>
+        )
+      })} 
+      
+      
+      />      
+
       
 
 

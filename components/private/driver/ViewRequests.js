@@ -245,6 +245,19 @@ export default function ViewRequests() {
             </View>
           </View>
 
+          <View style={{margin: 8}}>
+
+          <View style={styles.locationDetail}>
+              <Text style={styles.locationLabel}>Passenger Details</Text>
+              <Text style={styles.locationValue}>
+                {/* {passengers.dropoffLocation} */}
+
+                <PassengerDetails passengers={passengers} />
+              </Text>
+            </View>
+
+          </View>
+
           <View style={styles.tripInfo}>
             <View style={styles.tripInfoItem}>
               <FontAwesome5 name="road" size={16} color="#7f8c8d" />
@@ -328,9 +341,9 @@ export default function ViewRequests() {
 
   // Render appropriate UI based on data structure
   const renderContent = () => {
-    if (passengers && passengers.bookings) {
+    if (passengers && passengers?.bookings) {
       // Shared taxi case
-      if (passengers.bookings.length === 0) {
+      if (passengers?.bookings.length === 0) {
         return renderEmptyComponent();
       }
 
@@ -417,3 +430,40 @@ const PickUp = ({ passengers }) => {
   );
 };
 
+
+
+const PassengerDetails = ({passengers}) => {
+  const { token } = useSelector((state) => state.auth);
+  const[userDetails, setDetails] = useState({})
+
+  const id = passengers.userId 
+
+  useEffect(() => {
+
+    const fetchUser = async() => {
+
+      const response = await axios.get(`${ApiUrl}/show_user/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+
+      setDetails(response.data.user)
+
+    }
+
+    fetchUser()
+
+
+  }, [id])
+
+console.log(userDetails)
+
+  return(<>
+  
+  {userDetails?.fullname}, {" "},
+   {userDetails?.email}, {userDetails?.phone} {" "}
+  
+  
+  </>)
+}
