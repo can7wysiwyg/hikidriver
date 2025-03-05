@@ -18,19 +18,53 @@ import {
 import { styles } from './driverStyles';
 import { useSelector } from 'react-redux';
 import { ApiUrl } from '../../../helpers/ApiUrl';
+import axios from 'axios';
 
 
 
 export default function Driver ({navigation})  {
   const { token, user } = useSelector((state) => state.auth);
   const [refreshing, setRefreshing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const[passengers, setPassengers] = useState({})  
   const [earnings, setEarnings] = useState(85.50);
-  const [trips, setTrips] = useState(6);
+  const [trips, setTrips] = useState({});
+const [carInfo, setCarInfo] = useState({})
 
   useEffect(() => {
     fetchPassengers()
+    fetchTrips()
+    fetchTaxi()
 }, [])
+
+
+const fetchTaxi = async() => {
+
+  try {
+   
+    setIsLoading(true);
+
+    const response = await fetch(`${ApiUrl}/single_driver/${user?._id}`, {
+      method: 'GET',
+     })
+     if (!response.ok) {
+      throw new Error(`Failed to fetch driver data: ${response.statusText}`);
+    }
+
+    const fetchedData = await response.json();
+
+    setCarInfo(fetchedData)
+
+    
+  } catch (error) {
+      
+      console.log("failed to fetch car info", error);
+     } finally {
+      
+       setIsLoading(false);
+     }
+
+}
 
 
 
@@ -56,16 +90,42 @@ setPassengers(fetchedData.passengers)
 
  }
 
+
+ const fetchTrips = async() => {
+
+try {
+  if(!carInfo.driverId) {
+    return ""
+  }
+
+  const response = await axios.get(`${ApiUrl}/show_trips_to_owner/${carInfo?.driverId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+
+  setTrips(response.data.trip || {})
+  
+} catch (error) {
+  console.log("Error while fetching trips", error)
+  
+}
+
+ }
+
  
 const onRefresh = useCallback( async() => {
     setRefreshing(true);
     fetchPassengers()
+    fetchTrips()
+    fetchTaxi()
    
     setTimeout(() => {
       setRefreshing(false);
     }, 2000);
   }, []);
 
+  
 
   return (
     <SafeAreaView style={styles.container}>
@@ -87,7 +147,7 @@ const onRefresh = useCallback( async() => {
           </View>
           <View style={styles.summaryItem}>
             <FontAwesome5 name="route" size={20} color="#16a085" />
-            <Text style={styles.summaryValue}>{trips}</Text>
+            <Text style={styles.summaryValue}>{trips?.tripNumber}</Text>
             <Text style={styles.summaryLabel}>Trips</Text>
           </View>
         </View>

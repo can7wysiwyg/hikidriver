@@ -46,7 +46,9 @@ export default function ViewRequests() {
       );
 
       const fetchedData = await response.json();
-      setPassengers(fetchedData.passengers);
+      // setPassengers(fetchedData.passengers);
+      setPassengers(fetchedData.passengers || { bookings: [] });
+
     } catch (error) {
       console.log("Error while fetching passengers", error);
       Alert.alert("Error", "Failed to fetch passengers. Please try again.");
@@ -142,6 +144,33 @@ export default function ViewRequests() {
     }
   };
 
+
+
+  const EndPrivateTrip = async () => {
+    try {
+      const response = await axios.delete(
+        `${ApiUrl}/de_board_passenger_from_non_shared_taxi_and_count/${user?._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.msg) {
+        Alert.alert("Success", "Trip ended successfully");
+        fetchPassengers(); // Refresh the list
+      } else {
+        Alert.alert("Error", "Failed to deboard passenger");
+      }
+    } catch (error) {
+      console.log("Error while deboarding passenger", error);
+      Alert.alert("Error", "Failed to deboard passenger. Please try again.");
+    }
+  };
+
+
+
   const deboardSharedPassenger = async (userId) => {
     let driverId = carInfo.driverId;
 
@@ -199,7 +228,8 @@ export default function ViewRequests() {
         </Text>
       </View>
       <Text style={styles.bookingsHeader}>
-        Passengers ({passengers.bookings?.length || 0})
+        {/* Passengers ({passengers.bookings?.length || 0}) */}
+        Passengers ({passengers.bookings ? passengers.bookings.length : 0})
       </Text>
     </View>
   );
@@ -319,12 +349,25 @@ export default function ViewRequests() {
           )}
         </View>
 
-        <TouchableOpacity
+
+        {
+          passengers.rideStatus === "requested" ? <TouchableOpacity
           style={styles.deboardButton}
           onPress={() => handleDeboardPassenger()}
         >
           <Text style={styles.deboardButtonText}>Deboard Passenger</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> :
+
+<TouchableOpacity
+style={styles.deboardButton}
+ onPress={() => EndPrivateTrip()}
+>
+<Text style={styles.deboardButtonText}>End Trip</Text>
+</TouchableOpacity>
+
+        }
+
+        
       </View>
     </View>
   );
@@ -461,7 +504,7 @@ console.log(userDetails)
 
   return(<>
   
-  {userDetails?.fullname}, {" "},
+  {userDetails?.fullname}, {""} ,
    {userDetails?.email}, {userDetails?.phone} {" "}
   
   
