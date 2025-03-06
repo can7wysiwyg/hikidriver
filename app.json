@@ -16,12 +16,26 @@
       "supportsTablet": true
     },
     "android": {
+  
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "POST_NOTIFICATIONS"
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.can1996.driver"
     },
+    "plugins": [
+      "expo-build-properties"
+      
+      
+        
+      ]
+
+    ,
     "web": {
       "favicon": "./assets/favicon.png"
     }

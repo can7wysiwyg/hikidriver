@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import 'react-native-gesture-handler';
 import { StatusBar } from 'react-native'; // Added Platform to detect device platform
 import { SafeAreaView } from 'react-native';
@@ -10,8 +10,11 @@ import { enableScreens } from 'react-native-screens';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 
+
 // Enable screens
 enableScreens();
+
+
 
 
 export default function App() {

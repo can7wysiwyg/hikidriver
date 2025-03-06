@@ -25,11 +25,8 @@ import RoutePrice from './private/driver/RoutePrice';
 import PostTaxiRoute from './private/driver/PostTaxiRoute';
 import ViewRequests from './private/driver/ViewRequests';
 import PaymentSystems from './private/driver/PaymentSystems';
+ 
 
-
-
-
-// import FCMHandler from '../helpers/FCMHandler';
 
 // Create the Stack Navigator for Login and Register screens
 const Stack = createStackNavigator();
@@ -556,8 +553,7 @@ function AppNavigator() {
     <NavigationContainer ref={navigationRef}>
     
 
-{/* {token && <FCMHandler />} */}
-    
+     
 {/* first time user modal */}
 
  
