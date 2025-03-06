@@ -114,16 +114,29 @@ try {
  }
 
  
-const onRefresh = useCallback( async() => {
-    setRefreshing(true);
-    fetchPassengers()
-    fetchTrips()
-    fetchTaxi()
+// const onRefresh = useCallback( async() => {
+//     setRefreshing(true);
+//     fetchPassengers()
+//     fetchTrips()
+//     fetchTaxi()
    
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 2000);
-  }, []);
+//     setTimeout(() => {
+//       setRefreshing(false);
+//     }, 2000);
+//   }, []);
+
+
+const onRefresh = useCallback(async () => {
+  setRefreshing(true);
+  
+  // Perform all fetches in parallel
+  await Promise.all([fetchPassengers(), fetchTrips(), fetchTaxi()]);
+  setTimeout(() => {
+           setRefreshing(false);
+         }, 6000);
+
+}, []);
+
 
   
 

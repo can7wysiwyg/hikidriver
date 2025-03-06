@@ -25,8 +25,8 @@ import RoutePrice from './private/driver/RoutePrice';
 import PostTaxiRoute from './private/driver/PostTaxiRoute';
 import ViewRequests from './private/driver/ViewRequests';
 import PaymentSystems from './private/driver/PaymentSystems';
- 
-
+import { registerForPushNotificationsAsync } from '../helpers/notifications';
+import FCMHandler from '../helpers/FCMHandler';
 
 // Create the Stack Navigator for Login and Register screens
 const Stack = createStackNavigator();
@@ -484,6 +484,16 @@ function AppNavigator() {
       const navigationRef = React.useRef(null)
 
 
+      useEffect(() => {
+        // Register for push notifications
+        if (token) {
+          registerForPushNotificationsAsync();
+        }
+      }, [token]);
+    
+  
+
+
   const dispatch = useDispatch();
 
   
@@ -554,9 +564,8 @@ function AppNavigator() {
     
 
      
-{/* first time user modal */}
 
- 
+{token && <FCMHandler />}
 
       {/* navigation here */}
          {token && user?.role === 11 && <DriverLocationUpdater driverId={user?._id} /> }

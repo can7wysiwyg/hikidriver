@@ -16,7 +16,7 @@
       "supportsTablet": true
     },
     "android": {
-  
+    "googleServicesFile": "./firebase-driver.json",
       "permissions": [
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION",
@@ -29,7 +29,23 @@
       "package": "com.can1996.driver"
     },
     "plugins": [
-      "expo-build-properties"
+      "expo-build-properties",
+      [
+        "@react-native-firebase/app",
+        {
+          "firebaseVersion": "11.7.0"
+        }
+      ],
+      [
+        "@react-native-firebase/messaging",
+        {
+          "presentationOptions": [
+            "badge",
+            "sound",
+            "alert"
+          ]
+        }
+      ]
       
       
         
