@@ -39,7 +39,7 @@ const Tab = createBottomTabNavigator();
 const HomeBar = React.memo(() => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="Hom" component={Home}  
+      <Stack.Screen name="Home" component={Home}  
       
       options={() => ({
         headerShown: false,
@@ -580,7 +580,7 @@ function AppNavigator() {
       >
     
          <Tab.Screen
-          name="Home"
+          name="home"
           component={HomeBar}
           options={{
             tabBarIcon: ({ color, size }) => (

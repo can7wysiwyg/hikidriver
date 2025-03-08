@@ -31,11 +31,19 @@ export default function Driver ({navigation})  {
   const [trips, setTrips] = useState({});
 const [carInfo, setCarInfo] = useState({})
 
-  useEffect(() => {
-    fetchPassengers()
-    fetchTrips()
-    fetchTaxi()
+
+
+useEffect(() => {
+  fetchTaxi()
+  fetchPassengers()
 }, [])
+
+
+useEffect(() => {
+  if (carInfo.driverId) {
+    fetchTrips()
+  }
+}, [carInfo])
 
 
 const fetchTaxi = async() => {
@@ -114,17 +122,6 @@ try {
  }
 
  
-// const onRefresh = useCallback( async() => {
-//     setRefreshing(true);
-//     fetchPassengers()
-//     fetchTrips()
-//     fetchTaxi()
-   
-//     setTimeout(() => {
-//       setRefreshing(false);
-//     }, 2000);
-//   }, []);
-
 
 const onRefresh = useCallback(async () => {
   setRefreshing(true);
@@ -138,7 +135,6 @@ const onRefresh = useCallback(async () => {
 }, []);
 
 
-  
 
   return (
     <SafeAreaView style={styles.container}>
@@ -153,11 +149,11 @@ const onRefresh = useCallback(async () => {
         
         {/* Summary Row */}
         <View style={styles.summaryRow}>
-          <View style={styles.summaryItem}>
+          {/* <View style={styles.summaryItem}>
             <MaterialIcons name="attach-money" size={24} color="#16a085" />
-            <Text style={styles.summaryValue}>${earnings.toFixed(2)}</Text>
+            <Text style={styles.summaryValue}>MWK{earnings.toFixed(2)}</Text>
             <Text style={styles.summaryLabel}>Today</Text>
-          </View>
+          </View> */}
           <View style={styles.summaryItem}>
             <FontAwesome5 name="route" size={20} color="#16a085" />
             <Text style={styles.summaryValue}>{trips?.tripNumber}</Text>
