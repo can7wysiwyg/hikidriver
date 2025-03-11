@@ -466,12 +466,12 @@ const fetchRoute = async() => {
             fontSize: 16,
             fontWeight: '600',
             color: '#333',
-          }}>{route.routeName}</Text>
+          }}>{route?.routeName}</Text>
           <Text style={{
             fontSize: 16,
             fontWeight: '600',
             color: '#0047AB',
-          }}>MWK {route.fare.toLocaleString()}</Text>
+          }}>MWK {route?.fare.toLocaleString()}</Text>
         </View>
         
         <View style={{
@@ -495,7 +495,7 @@ const fetchRoute = async() => {
             <Text style={{
               fontSize: 15,
               color: '#444',
-            }}>{route.startLocation.placeName}</Text>
+            }}>{route?.startLocation?.placeName || route?.destinationArea}   </Text>
           </View>
           
           <View style={{
@@ -519,7 +519,7 @@ const fetchRoute = async() => {
             <Text style={{
               fontSize: 15,
               color: '#444',
-            }}>{route.endLocation.placeName}</Text>
+            }}>{route?.endLocation?.placeName}</Text>
           </View>
         </View>
         

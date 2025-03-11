@@ -1,9 +1,45 @@
-import React, { useState } from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native';
+import { ApiUrl } from '../../../helpers/ApiUrl';
 
 export default function RouteUpdateList({ navigation, route }) {
   const {data} = route.params
   const [scale] = useState(new Animated.Value(1));
+  const[infor, setInfor] = useState({})
+
+
+  useEffect(() => {
+
+         const fetchRoute =  async() => {
+          if(!data) {
+            return ""
+          }
+
+          try {
+
+
+            const response = await axios.get(`${ApiUrl}/taxi_single_route/${data}`)
+
+            setInfor(response.data.taxiRoute)
+
+
+            
+          } catch (error) {
+            console.log("while fetching route", error)
+          }
+
+          
+
+
+
+         }
+
+
+         fetchRoute()
+
+
+  }, [data])
 
 
   const handlePress = () => {
@@ -21,11 +57,45 @@ export default function RouteUpdateList({ navigation, route }) {
     ]).start();
   };
 
+  console.log(infor)
+
   return (
     <View style={styles.container}>
 
     
+     
+
+
+{
+  infor?.destinationArea   ?  (<>
+
+
+<Animated.View style={[styles.buttonContainer, { transform: [{ scale }] }]}>
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: '#FF9800' }]}
+          onPress={() => { handlePress(); navigation.navigate('RouteDestinationName', {data: data}); }}
+        >
+        
+          <Text style={styles.buttonText}>Update Destination Name</Text>
+        </TouchableOpacity>
+      </Animated.View>
+
+
       <Animated.View style={[styles.buttonContainer, { transform: [{ scale }] }]}>
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: '#9C27B0' }]}
+          onPress={() => { handlePress(); navigation.navigate('RoutePrice', {data: data}); }}
+        >
+          
+          <Text style={styles.buttonText}>Update Route Price</Text>
+        </TouchableOpacity>
+      </Animated.View>
+
+
+  
+  </>)    :  (<>
+
+    <Animated.View style={[styles.buttonContainer, { transform: [{ scale }] }]}>
         <TouchableOpacity
           style={[styles.button, { backgroundColor: '#FF9800' }]}
           onPress={() => { handlePress(); navigation.navigate('RouteName', {data: data}); }}
@@ -35,7 +105,7 @@ export default function RouteUpdateList({ navigation, route }) {
         </TouchableOpacity>
       </Animated.View>
 
-    
+
       <Animated.View style={[styles.buttonContainer, { transform: [{ scale }] }]}>
         <TouchableOpacity
           style={[styles.button, { backgroundColor: '#9C27B0' }]}
@@ -68,6 +138,16 @@ export default function RouteUpdateList({ navigation, route }) {
         </TouchableOpacity>
       </Animated.View>
 
+
+  
+  
+  
+  </>)
+}
+ 
+
+    
+      
       
       
     </View>

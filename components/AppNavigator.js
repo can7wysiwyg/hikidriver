@@ -27,6 +27,7 @@ import ViewRequests from './private/driver/ViewRequests';
 import PaymentSystems from './private/driver/PaymentSystems';
 import { registerForPushNotificationsAsync } from '../helpers/notifications';
 import FCMHandler from '../helpers/FCMHandler';
+import RouteDestinationName from './private/driver/RouteDestinationName';
 
 // Create the Stack Navigator for Login and Register screens
 const Stack = createStackNavigator();
@@ -248,6 +249,27 @@ const DriverStack = React.memo(() => {
       
       
       />   
+
+
+<Stack.Screen 
+      name="RouteDestinationName" 
+      component={RouteDestinationName}
+      options={({ navigation }) => ({
+        headerShown: true,
+        headerTitle: "Destination Name",
+        headerLeft: () => (
+          <TouchableOpacity 
+            onPress={() => navigation.goBack()}
+            style={{ marginLeft: 10 }}
+          >
+            <Icon name="arrow-back" size={24} color="#000" />
+          </TouchableOpacity>
+        )
+      })} 
+      
+      
+      />
+
 
 <Stack.Screen 
       name="ViewRequests" 
