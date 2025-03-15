@@ -1,0 +1,1 @@
+export const DistrictsUrl = "https://malawi-api.onrender.com"

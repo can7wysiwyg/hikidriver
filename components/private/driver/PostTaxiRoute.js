@@ -4,6 +4,9 @@ import { useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import { ApiUrl } from '../../../helpers/ApiUrl';
+import { Picker } from '@react-native-picker/picker';
+import { DistrictsUrl } from '../../../helpers/DistrictsUrl';
+
 
 export default function PostTaxiRoute({navigation, route}) {
   const {data} = route.params;
@@ -21,6 +24,34 @@ export default function PostTaxiRoute({navigation, route}) {
   const [endLocationCoords, setEndLocationCoords] = useState(null);
   const [startLocSuggestions, setStartLocSuggestions] = useState([]);
   const [endLocSuggestions, setEndLocSuggestions] = useState([]);
+  const[districts, setDistricts] = useState([])
+
+
+
+useEffect(() => {
+fetchDistricts()
+
+}, [])
+
+
+
+  const fetchDistricts = async() => {
+
+    try {
+
+      const response = await axios.get(`${DistrictsUrl}/api/districts_all`)
+
+      console.log(response.data.districts)
+
+      setDistricts(response.data.districts[0].districts)
+      
+    } catch (error) {
+      console.log("Error fetching districts", error)
+    }
+
+  }
+
+
   
   if(!data) {
     return null;
@@ -205,6 +236,8 @@ const handleSubmit = async () => {
   }
 };
 
+
+
   // Render the form based on route type selected
   return (
     <KeyboardAvoidingView
@@ -238,12 +271,29 @@ const handleSubmit = async () => {
       // LONG DISTANCE FIELDS - Only destination area
       <View style={styles.formGroup}>
         <Text style={styles.label}>Destination Area</Text>
-        <TextInput
+        {/* <TextInput
           style={styles.input}
           value={destinationArea}
           onChangeText={setDestinationArea}
           placeholder="Enter the destination area"
-        />
+        /> */}
+
+        <Picker
+         selectedValue={destinationArea}
+         style={styles.input}
+         onValueChange={(itemValue) => setDestinationArea(itemValue)}
+        >
+
+          {
+            districts?.map((item) => (
+              <Picker.Item label={item.districtName} value={item.districtName} key={item._id} />
+            ))
+          }
+
+
+        </Picker>
+
+
       </View>
     ) : (
       // LOCAL ROUTE FIELDS - Start and end location with search
