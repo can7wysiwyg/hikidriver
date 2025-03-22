@@ -249,6 +249,27 @@ const fetchRoute = async() => {
     });
   };
 
+
+  const deleteRoute = async() => {
+
+    try {
+
+
+      await axios.delete(`${ApiUrl}/driver_erase_my_route/${user?._id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+
+
+      fetchRoute()
+      
+    } catch (error) {
+      console.log(`there was a problem deleting this route: ${error}`)
+    }
+    
+  }
+
   
 
 
@@ -540,6 +561,28 @@ const fetchRoute = async() => {
             color: '#0047AB',
             fontWeight: '500',
           }}>Update Route</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+        style={{
+          backgroundColor: 'red',
+          borderWidth: 1,
+          borderColor: '#0047AB',
+          borderRadius: 4,
+          paddingVertical: 8,
+          paddingHorizontal: 12,
+          alignItems: 'center',
+          marginTop: 8,
+        }}
+
+        onPress={deleteRoute}
+        >
+          <Text
+          style={{
+            color: 'white',
+            fontWeight: '500',
+          }}
+          >Delete Route</Text>
         </TouchableOpacity>
       </View>
     ))

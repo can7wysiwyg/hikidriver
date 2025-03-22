@@ -27,9 +27,9 @@ export default function App() {
             <StatusBar style="auto" />
 
       {/* <SafeAreaView style={{ flex: 1 }}> */}
-          <AuthProvider>  
+           <AuthProvider>   
         <AppNavigator />
-          </AuthProvider>  
+           </AuthProvider>   
         <StatusBar style="auto" />
       {/* </SafeAreaView> */}
       </SafeAreaProvider>

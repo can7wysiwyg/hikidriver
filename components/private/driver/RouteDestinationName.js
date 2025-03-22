@@ -1,6 +1,6 @@
 
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Alert,
   KeyboardAvoidingView,
@@ -16,13 +16,44 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { ApiUrl } from '../../../helpers/ApiUrl';
+ import { Picker } from '@react-native-picker/picker';
+import { DistrictsUrl } from '../../../helpers/DistrictsUrl';
+
+
 
 
 export default function RouteDestinationName({ route, navigation }) {
   const { data } = route.params;
   const { token } = useSelector((state) => state.auth);
   const [destinationArea, setDestinationArea] = useState('');
-  const [loading, setLoading] = useState(false); // State to handle the loader
+  const [loading, setLoading] = useState(false); 
+  const[districts, setDistricts] = useState([])
+
+  useEffect(() => {
+    fetchDistricts()
+    
+    }, [])
+    
+    
+    
+      const fetchDistricts = async() => {
+    
+        try {
+    
+          const response = await axios.get(`${DistrictsUrl}/api/districts_all`)
+    
+          console.log(response.data.districts)
+    
+          setDistricts(response.data.districts[0].districts)
+          
+        } catch (error) {
+          console.log("Error fetching districts", error)
+        }
+    
+      }
+    
+    
+
 
   if (!data) {
     return '';
@@ -36,7 +67,7 @@ export default function RouteDestinationName({ route, navigation }) {
 
     setLoading(true); // Start the loader
     try {
-      const response = await axios.put(
+       await axios.put(
         `${ApiUrl}/driver_route_update/${data}`,
         { destinationArea },
         {
@@ -71,14 +102,24 @@ export default function RouteDestinationName({ route, navigation }) {
         <Text style={styles.header}>Update Destination Name</Text>
 
         <View style={styles.formGroup}>
+
+        <Picker
+         selectedValue={destinationArea}
+         style={styles.input}
+         onValueChange={(itemValue) => setDestinationArea(itemValue)}
+        >
+
+          {
+            districts?.map((item) => (
+              <Picker.Item label={item.districtName} value={item.districtName} key={item._id} />
+            ))
+          }
+
+
+        </Picker>
+
           
-          <TextInput
-            style={styles.input}
-            value={destinationArea}
-            onChangeText={setDestinationArea}
-            placeholder="Destination name"
-          />
-        </View>
+                 </View>
 
         <TouchableOpacity
           style={styles.submitButton}

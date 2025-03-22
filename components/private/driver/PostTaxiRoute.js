@@ -271,13 +271,7 @@ const handleSubmit = async () => {
       // LONG DISTANCE FIELDS - Only destination area
       <View style={styles.formGroup}>
         <Text style={styles.label}>Destination Area</Text>
-        {/* <TextInput
-          style={styles.input}
-          value={destinationArea}
-          onChangeText={setDestinationArea}
-          placeholder="Enter the destination area"
-        /> */}
-
+        
         <Picker
          selectedValue={destinationArea}
          style={styles.input}
