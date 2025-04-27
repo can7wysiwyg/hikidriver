@@ -9,6 +9,7 @@ import {ApiUrl} from "../../../helpers/ApiUrl"
 import { styles } from './viewCarStyles';
 
 
+
 export default function ViewCar  ({navigation})  {
 
   const { token, user } = useSelector((state) => state.auth);
@@ -242,6 +243,17 @@ const fetchRoute = async() => {
     });
   };
 
+
+  const toggleAbleToBorrow = () => {
+
+    setCarInfo({
+      ...carInfo,
+      ableToBorrow: carInfo.ableToBorrow === true ? false : true
+    });
+
+
+  }
+
   const toggleVehicleType = () => {
     setCarInfo({
       ...carInfo,
@@ -270,6 +282,8 @@ const fetchRoute = async() => {
     
   }
 
+
+  console.log(carInfo)
   
 
 
@@ -397,6 +411,45 @@ const fetchRoute = async() => {
               <Text style={styles.infoText}>{carInfo.driverCarPlate || "Not specified"}</Text>
             )}
           </View>
+
+
+{/* able to borrow */}
+
+ 
+ <View style={styles.infoRow}>
+      <View style={styles.iconContainer}>
+        <FontAwesome5 name="handshake" size={20} color="#0066cc" />
+      </View>
+      
+      {isEditing ? 
+      (
+        <TouchableOpacity style={styles.taxiTypeToggle} onPress={toggleAbleToBorrow}>
+          <Text style={styles.toggleText}>
+            {carInfo.ableToBorrow === true ? true : false}
+          </Text>
+          <FontAwesome5 
+            name={carInfo.ableToBorrow === true ? 'toggle-on' : 'toggle-off'} 
+            size={20} 
+            color={carInfo.ableToBorrow === true ? "#0066cc" : "#888"}
+          />
+        </TouchableOpacity>
+      )
+      
+      : (
+        <Text style={styles.infoText}>
+          {carInfo.ableToBorrow === true 
+            ? "Your car is on borrowing mode" 
+            : carInfo.ableToBorrow === false 
+              ? "Your car is not on borrowing mode" 
+              : "Borrowing status not specified"}
+        </Text>
+      )}
+    </View> 
+
+
+
+{/* end able to borrow */}
+
           
           <View style={styles.infoRow}>
             <View style={styles.iconContainer}>
